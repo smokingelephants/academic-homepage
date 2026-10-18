@@ -339,7 +339,7 @@ def build(data: dict) -> None:
     chapters = data["chapters"]
     toc = "<ol>" + "".join(f'<li><a href="{c["slug"]}.html">{html.escape(c["title"])}</a><p class="description">{html.escape(c["subtitle"])}</p></li>' for c in chapters) + "</ol>"
     intro = prose(data["introduction"])
-    content = '<h1>Dynamic Programming Visualization Handbook</h1><p>Sourabh Bose · 2026</p><h2>Contents</h2>' + toc + intro
+    content = '<h1>Dynamic Programming Visualization Handbook</h1><h2>Contents</h2>' + toc + intro
     content += '<p>Diagrams retain the original vector artwork. Select a diagram to open it at full size; text, code, and tables are available directly on these pages.</p>'
     (BOOK / "index.html").write_text(page("Contents", content, navigation(chapters, None)))
     for index, chapter in enumerate(chapters):
