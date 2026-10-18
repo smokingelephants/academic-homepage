@@ -1,20 +1,19 @@
 # Sourabh Bose — academic homepage
 
-Minimal static academic homepage for GitHub Pages. No build tools or external dependencies.
+Minimal static academic homepage on GitHub Pages. No build tools or external dependencies.
 
-## Editing
+- `index.html`: short bio and My blog, with the DP visualization handbook first.
+- `research.html`: research summary and official IEEE Xplore article links.
+- `teaching.html`: courses taught and corresponding WSU course lookup links.
+- `style.css`: shared minimal styles.
+- `resume.pdf`: unchanged resume supplied in Downloads.
+- `publications/dynamic_programming_visualization_handbook.pdf`: unchanged handbook.
 
-Edit `index.html` to update research, teaching, and notes. Replace
-`publications/dynamic_programming_visualization_handbook.pdf` to update the handbook,
-keeping the filename stable so existing links continue to work. Both viewing and
-explicit download links are provided. The PDF is an unchanged copy of the original.
+GitHub Pages serves the repository root on `main`; push changes to publish.
+For local preview, run `python3 -m http.server 8000` here.
 
-## Publishing
+Content was checked against the supplied resume and official WSU faculty profile.
+IEEE titles, authors, and publisher destinations were verified against publisher-deposited Crossref DOI metadata. IEEE Xplore blocks automated full-page retrieval.
+Course names and lookup destinations were checked against the WSU catalog. CS 697AB is the former Machine Learning number; CS 410 and CS 510 have distinct current catalog titles.
 
-GitHub Pages serves the root of the `main` branch. Push changes to `main` to publish.
-
-## Local preview
-
-Run `python3 -m http.server 8000` from this directory, then visit
-http://localhost:8000. This repository intentionally includes only public homepage
-content and the handbook, not course source files, answer keys, or exams.
+Replace PDFs in place to preserve their public links. Only public homepage content and the two explicitly requested PDFs are included.
