@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Contents — Dynamic Programming Visualization Handbook by Sourabh Bose.">
+<title>Contents — DP Visualization Handbook</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header><p class="book-title">Dynamic Programming Visualization Handbook</p><nav class="book-nav" aria-label="Handbook navigation"><a href="index.html">Contents</a> · <a href="../index.html">Home</a> · <a rel="next" href="fibonacci.html">Next →</a></nav></header>
+<main id="main"><h1>Dynamic Programming Visualization Handbook</h1><p>Sourabh Bose · 2026</p><h2>Contents</h2><ol><li><a href="fibonacci.html">Fibonacci</a><p class="description">The smallest recurrence that reveals repeated work</p></li><li><a href="knapsack.html">0/1 Knapsack</a><p class="description">Binary choices, invalid states, and a maximizing table</p></li><li><a href="edit-distance.html">Edit Distance</a><p class="description">Three-way choices over two string positions</p></li><li><a href="water-jugs.html">Water Jugs: Cyclic State Graphs</a><p class="description">When dependencies are no longer a DAG</p></li><li><a href="matrix-chain.html">Optimal Matrix-Chain Multiplication</a><p class="description">Partition choices with two required subproblems</p></li><li><a href="tower-of-hanoi.html">Tower of Hanoi: Arbitrary Legal States</a><p class="description">A cyclic state graph and its target-directed optimal DAG</p></li><li><a href="two-sets-ii.html">Two Sets II: Three Formulations</a><p class="description">The same counting problem represented by three different state semantics</p></li></ol><h2>About this handbook</h2>
+<p>This handbook connects recursive programs, state graphs, and dynamic programming tables through small, fully specified examples. It assumes familiarity with Python, recursion, and basic graph algorithms. Brief captions identify the dependencies, evaluation order, and choices visible in each snapshot.</p>
+<p>Fibonacci introduces repeated subproblems; knapsack and edit distance compare alternatives; matrix-chain multiplication combines two required subproblems per choice. Water jugs and Hanoi expose cycles and shortest-path structure. Two Sets II closes with three recursive coordinate systems for the same counting problem.</p>
+<h2>How to read the diagrams</h2>
+<ul>
+<li>
+<p><strong>Calls and states.</strong> Repeated arguments give separate occurrences in a call tree and a single vertex in a merged state graph.</p>
+</li>
+<li>
+<p><strong>Forward arrows are calls or dependencies.</strong> Faint or dotted edges are pending or contextual; stronger edges are currently active.</p>
+</li>
+<li>
+<p><strong>Return labels complete an expression.</strong> A placeholder such as <em>value + ??</em> becomes <em>value + returned value</em> when its child finishes.</p>
+</li>
+<li>
+<p><strong>Emphasis follows the chapter legend.</strong> Gold usually marks an optimal choice; in Fibonacci it marks a memoization frontier, and in Two Sets II it marks a comparison history.</p>
+</li>
+<li>
+<p><strong>Black partition nodes join required calls.</strong> In matrix-chain multiplication they show that one split needs both interval subproblems.</p>
+</li>
+<li>
+<p><strong>Table order follows dependencies.</strong> Blank cells await evaluation; disabled cells lie outside the recurrence&#x27;s state space. Some valid table cells are absent from the selected recursive trace.</p>
+</li>
+</ul>
+<p><strong>Acyclic versus cyclic dependencies.</strong> Memoization reuses a completed value; a visited mark only rejects a cycle on the current path. In the jug and Hanoi graphs, distance-to-target labels describe unrestricted shortest paths. A recursive call under an existing visited set may have fewer admissible continuations.</p><p>Diagrams retain the original vector artwork. Select a diagram to open it at full size; text, code, and tables are available directly on these pages.</p></main>
+<footer><nav class="book-nav" aria-label="Handbook navigation"><a href="index.html">Contents</a> · <a href="../index.html">Home</a> · <a rel="next" href="fibonacci.html">Next →</a></nav><p>© 2026 Dr. Sourabh Bose</p></footer>
+</body>
+</html>

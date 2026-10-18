@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Two Sets II: Three Formulations — Dynamic Programming Visualization Handbook by Sourabh Bose.">
+<title>Two Sets II: Three Formulations — DP Visualization Handbook</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header><p class="book-title">Dynamic Programming Visualization Handbook</p><nav class="book-nav" aria-label="Handbook navigation"><a rel="prev" href="tower-of-hanoi.html">← Previous</a> · <a href="index.html">Contents</a> · <a href="../index.html">Home</a></nav></header>
+<main id="main"><h1>7. Two Sets II: Three Formulations</h1><p><em>The same counting problem represented by three different state semantics</em></p><p>Fixed identities, sorted sums, and current/other roles give three coordinate systems for the same count. The subtrees compare how choices change those coordinates.</p><dl><dt>State</dt><dd><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, with formulation-specific meanings for the two sums</dd><dt>Goal</dt><dd>Count unordered equal-sum partitions of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mi>&#x02026;</mi><mo>&#x0002C;</mo><mi>n</mi><mo stretchy="false">&#x0007D;</mo></mrow></math>.</dd><dt>Base cases</dt><dd>Overshooting returns <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>; when <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>i</mi><mo>&#x0003E;</mo><mi>n</mi></mrow></math>, return <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> iff both sums equal the target.</dd></dl><details class="chapter-toc"><summary>On this page</summary><ol><li><a href="#section-01">Problem statement, counting convention, and examples</a></li><li><a href="#section-02">Two concrete histories viewed through three coordinate systems</a></li><li><a href="#section-03">Why the three recursive programs return the same count</a></li><li><a href="#section-04">Recursive code: fixed Set 1 and Set 2</a></li><li><a href="#section-05">Selected subtree: memberships stay attached to A and B</a></li><li><a href="#section-06">Recursive code: normalize both children</a></li><li><a href="#section-07">Selected subtree: normalization can interchange L and S</a></li><li><a href="#section-08">Recursive code: the recipient becomes current</a></li><li><a href="#section-09">Selected subtree: choosing other explicitly rotates the roles</a></li><li><a href="#section-10">Reading the same choices across F, G, and H</a></li></ol></details><section id="section-01"><h2>Problem statement, counting convention, and examples</h2><p><strong>Problem.</strong> Count the ways to divide the integers <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mi>&#x02026;</mi><mo>&#x0002C;</mo><mi>n</mi></mrow></math> into two sets having equal sum. The two final sets are unordered.</p>
+<p><strong>Example 1 (used throughout).</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>7</mn></mrow></math>, total <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>28</mn></mrow></math>, target per set <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>14</mn></mrow></math>. There are <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn></mrow></math> unordered equal-sum partitions, so the displayed recursions return <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>8</mn></mrow></math> labeled assignments before the final division by <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>.</p>
+<p><strong>Example 2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>4</mn><mo>&#x02192;</mo><mn>1</mn></mrow></math>, represented by <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x0007D;</mo><mo>&#x02223;</mo><mo stretchy="false">&#x0007B;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>.</p>
+<p><strong>Example 3.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>5</mn><mo>&#x02192;</mo><mn>0</mn></mrow></math>, because the total is odd.</p>
+<p>Each state records the next integer <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>i</mi></mrow></math> and two sums. The code below assumes even total sum; odd totals have answer <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>. Each unordered partition has two labeled assignments, hence division by <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>. The CSES problem uses modulus <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>10</mn><mn>9</mn></msup><mo>&#x0002B;</mo><mn>7</mn></mrow></math>; these small examples use exact counts.</p></section>
+<section id="section-02"><h2>Two concrete histories viewed through three coordinate systems</h2><p>The membership line above a node records the actual sets. The circle records only the parameters received by that recursive call.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Comparison table"><table><tr><th>
+Form </th><th> Meaning of positions </th><th>
+History <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi mathvariant="script">H</mi></mrow></math> </th><th> History <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi mathvariant="script">K</mi></mrow></math></th></tr><tr><td>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> permanent Set 1 / Set 2 </td><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math></td></tr><tr><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>L</mi><mo>&#x0002C;</mo><mi>S</mi><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> sort after every choice so <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi><mo>&#x02265;</mo><mi>S</mi></mrow></math> </td><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>; roles switched twice </td><td> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math></td></tr><tr><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>C</mi><mo>&#x0002C;</mo><mi>O</mi><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> choosing other makes it current </td><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>; roles switched twice </td><td> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo></mrow></math>; now <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo>&#x0003C;</mo><mi>O</mi></mrow></math></td></tr></table></div>
+<p><strong>History <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi mathvariant="script">H</mi></mrow></math>:</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x02192;</mo><mi>A</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>2</mn><mo>&#x02192;</mo><mi>B</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>3</mn><mo>&#x02192;</mo><mi>A</mi></mrow></math>, giving <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x0007D;</mo></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mn>2</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>. It exposes the normalization swap in <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi></mrow></math> and the action-driven swap in <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math>.</p>
+<p><strong>History <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi mathvariant="script">K</mi></mrow></math>:</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo>&#x02192;</mo><mi>A</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>4</mn><mo>&#x02192;</mo><mi>B</mi></mrow></math>, giving sums <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math>. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi></mrow></math> preserves <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x0002C;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi></mrow></math> stores <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math> by magnitude, and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math> stores <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo></mrow></math> because the recipient of the “other” action becomes current.</p>
+<p>selected comparison branch</p>
+<p>a separate repeated call with equal arguments <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02261;</mo></mrow></math> same state values, not a memoized merge</p></section>
+<section id="section-03"><h2>Why the three recursive programs return the same count</h2><p><strong>Fixed-set symmetry.</strong> Exchanging Set 1 and Set 2 leaves the terminal test and the pair of recursive choices unchanged, so <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>b</mi><mo>&#x0002C;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math>.</p>
+<p><strong>Canonical coordinates.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi></mrow></math> evaluates the same two assignments as <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi></mrow></math>, but rewrites each child in larger/smaller order. This changes the state labels and can make two separate calls have equal arguments; both branch contributions remain present.</p>
+<p><strong>Dynamic coordinates.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math> keeps the first coordinate attached to the most recently selected role. Its second branch calls <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0002C;</mo><mi>O</mi><mo>&#x0002B;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo></mrow></math>; applying the symmetry of <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi></mrow></math> shows that this reordered call has the same continuation count as the corresponding fixed-set call.</p>
+<p>The counts agree; coordinate normalization does not remove either branch&#x27;s contribution.</p></section>
+<section id="section-04"><h2>Recursive code: fixed Set 1 and Set 2</h2><p>The two sum positions have permanent identities. Sending an integer to one set never changes the interpretation of either parameter.</p>
+<pre><code class="language-python">N = 7
+TARGET = N * (N + 1) // 4
+
+def count_fixed(i, set1_sum, set2_sum):
+    # Base cases
+    if set1_sum &gt; TARGET or set2_sum &gt; TARGET:
+        return 0
+    if i &gt; N:
+        return int(set1_sum == TARGET and
+                   set2_sum == TARGET)
+
+    # Choice 1: send i to permanently named Set 1.
+    send_set1 = count_fixed(
+        i + 1, set1_sum + i, set2_sum)
+
+    # Choice 2: send i to permanently named Set 2.
+    send_set2 = count_fixed(
+        i + 1, set1_sum, set2_sum + i)
+
+    return send_set1 + send_set2
+
+answer = count_fixed(1, 0, 0) // 2</code></pre>
+<p>Invariant: parameter identity is permanent</p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi></mrow></math> is always the sum of Set 1 and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>b</mi></mrow></math> is always the sum of Set 2. The relation <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>b</mi><mo>&#x0002C;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math> is mathematically valid, but this formulation does not use it to rename or merge calls.</p>
+<p>Consequently, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> are symmetric but distinct recursive calls. The membership labels remain attached to the same named sets.</p></section>
+<section id="section-05"><h2>Selected subtree: memberships stay attached to A and B</h2><figure><a href="assets/two-sets-ii-05.svg" aria-label="Open diagram: Two Sets II: Three Formulations: Selected subtree: memberships stay attached to A and B"><img src="assets/two-sets-ii-05.svg" alt="Two Sets II: Three Formulations: Selected subtree: memberships stay attached to A and B" width="300" height="317" loading="lazy"></a><figcaption>Original diagram, source page 2. <a href="assets/two-sets-ii-05.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>Gold traces <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x02192;</mo><mi>A</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x02192;</mo><mi>B</mi></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x02192;</mo><mi>A</mi></mrow></math>. Set membership and parameter identity agree throughout.</p></div></section>
+<section id="section-06"><h2>Recursive code: normalize both children</h2><p>Each choice adds to a role, then sorts the two resulting sums. The actual sets keep their elements while their L/S names may change.</p>
+<pre><code class="language-python">N = 7
+TARGET = N * (N + 1) // 4
+
+def normalize(x, y):
+    return max(x, y), min(x, y)
+
+def count_large_small(i, large, small):
+    # Base cases
+    if large &gt; TARGET:
+        return 0
+    if i &gt; N:
+        return int(large == TARGET and
+                   small == TARGET)
+
+    # Choice 1: add i to the set currently called L.
+    next_large, next_small = normalize(large + i, small)
+    send_large = count_large_small(
+        i + 1, next_large, next_small)
+
+    # Choice 2: add i to the set currently called S.
+    next_large, next_small = normalize(large, small + i)
+    send_small = count_large_small(
+        i + 1, next_large, next_small)
+
+    return send_large + send_small
+
+answer = count_large_small(1, 0, 0) // 2</code></pre>
+<p>Invariant: numerical order, not set identity</p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi><mo>&#x02265;</mo><mi>S</mi></mrow></math> at every call. If adding <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>i</mi></mrow></math> to the smaller sum makes it larger, the next call interchanges the two coordinate roles.</p>
+<p>At the root, “put 1 in L” and “put 1 in S, then normalize” both call <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>. The plain recursion evaluates both calls; their two contributions must still be added.</p></section>
+<section id="section-07"><h2>Selected subtree: normalization can interchange L and S</h2><figure><a href="assets/two-sets-ii-07.svg" aria-label="Open diagram: Two Sets II: Three Formulations: Selected subtree: normalization can interchange L and S"><img src="assets/two-sets-ii-07.svg" alt="Two Sets II: Three Formulations: Selected subtree: normalization can interchange L and S" width="294" height="319" loading="lazy"></a><figcaption>Original diagram, source page 2. <a href="assets/two-sets-ii-07.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>The two root children are drawn separately because there is no memoization; the equality annotation records multiplicity, not merging.</p></div></section>
+<section id="section-08"><h2>Recursive code: the recipient becomes current</h2><p>Choosing current preserves the roles. Choosing other adds i to O and passes that recipient first in the next recursive call.</p>
+<pre><code class="language-python">N = 7
+TARGET = N * (N + 1) // 4
+
+def count_current_other(i, current, other):
+    # Base cases
+    if current &gt; TARGET or other &gt; TARGET:
+        return 0
+    if i &gt; N:
+        return int(current == TARGET and
+                   other == TARGET)
+
+    # Choice 1: current receives i and keeps its role.
+    send_current = count_current_other(
+        i + 1, current + i, other)
+
+    # Choice 2: other receives i and becomes current.
+    send_other = count_current_other(
+        i + 1, other + i, current)
+
+    return send_current + send_other
+
+answer = count_current_other(1, 0, 0) // 2</code></pre>
+<p>Invariant: role follows the action, not magnitude</p>
+<p>The second branch is <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0002C;</mo><mi>O</mi><mo>&#x0002B;</mo><mi>i</mi><mo>&#x0002C;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo></mrow></math>: the recipient becomes current and the old current becomes other. No sorting occurs.</p>
+<p>Therefore <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math> may be less than <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi></mrow></math>. This distinguishes <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math> from <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi></mrow></math> even when a short history happens to produce the same numeric tuple. Equal root arguments again remain two recursive calls.</p></section>
+<section id="section-09"><h2>Selected subtree: choosing other explicitly rotates the roles</h2><figure><a href="assets/two-sets-ii-09.svg" aria-label="Open diagram: Two Sets II: Three Formulations: Selected subtree: choosing other explicitly rotates the roles"><img src="assets/two-sets-ii-09.svg" alt="Two Sets II: Three Formulations: Selected subtree: choosing other explicitly rotates the roles" width="315" height="319" loading="lazy"></a><figcaption>Original diagram, source page 3. <a href="assets/two-sets-ii-09.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>The lower contrast branch shows H(5,4,6): current is smaller, which cannot occur in the canonical large/small formulation.</p></div></section>
+<section id="section-10"><h2>Reading the same choices across F, G, and H</h2><p>Along history <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi mathvariant="script">H</mi></mrow></math>, the physical assignment is always <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x0007D;</mo></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mn>2</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>. The diagrams differ only in how the current call names these sets.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Comparison table"><table><tr><th>
+Form </th><th> final key </th><th> first coordinate means </th><th> why a role changes</th></tr><tr><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi></mrow></math> </td><td> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> permanently named <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> </td><td> never changes</td></tr><tr><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi></mrow></math> </td><td> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> currently larger set </td><td> normalize whenever order reverses</td></tr><tr><td>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi></mrow></math> </td><td> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> </td><td> recipient designated current </td><td> choosing other rotates roles</td></tr></table></div>
+<p>The equal numeric keys at the end of this one history do not make the formulations identical. History <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi mathvariant="script">K</mi></mrow></math> separates them immediately: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>G</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math>, but <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo></mrow></math> with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo>&#x0003C;</mo><mi>O</mi></mrow></math>.</p>
+<p>Repeated calls are deliberately drawn twice. The dotted equality annotation means “same arguments and two additive contributions,” not a cache lookup or a merged memoization node.</p></section></main>
+<footer><nav class="book-nav" aria-label="Handbook navigation"><a rel="prev" href="tower-of-hanoi.html">← Previous</a> · <a href="index.html">Contents</a> · <a href="../index.html">Home</a></nav><p>© 2026 Dr. Sourabh Bose</p></footer>
+</body>
+</html>

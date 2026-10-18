@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Fibonacci — Dynamic Programming Visualization Handbook by Sourabh Bose.">
+<title>Fibonacci — DP Visualization Handbook</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header><p class="book-title">Dynamic Programming Visualization Handbook</p><nav class="book-nav" aria-label="Handbook navigation"><a rel="prev" href="index.html">← Previous</a> · <a href="index.html">Contents</a> · <a href="../index.html">Home</a> · <a rel="next" href="knapsack.html">Next →</a></nav></header>
+<main id="main"><h1>1. Fibonacci</h1><p><em>The smallest recurrence that reveals repeated work</em></p><p>Both recursive calls are required. Merging repeated arguments produces a dependency DAG; evaluating it in order produces the DP array.</p><dl><dt>State</dt><dd><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math></dd><dt>Goal</dt><dd>Compute <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></math>.</dd><dt>Base cases</dt><dd><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math> and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>.</dd></dl><details class="chapter-toc"><summary>On this page</summary><ol><li><a href="#section-01">Problem overview and examples</a></li><li><a href="#section-02">Block 01 -- recursive code</a></li><li><a href="#section-03">Block 02 -- call fib(6)</a></li><li><a href="#section-04">Block 03 -- reach the first completed subproblem</a></li><li><a href="#section-05">Block 04 -- return fib(4)</a></li><li><a href="#section-06">Block 05 -- finish fib(5)</a></li><li><a href="#section-07">Block 06 -- expand the root&#x27;s second call</a></li><li><a href="#section-08">Block 07 -- complete naive fib(6)</a></li><li><a href="#section-09">Memo Block 01 -- top-down memoized code</a></li><li><a href="#section-10">Memo Block 02 -- merge the two base states</a></li><li><a href="#section-11">Memo Block 03 -- memoize F(2)</a></li><li><a href="#section-12">Memo Block 04 -- memoize F(3)</a></li><li><a href="#section-13">Memo Block 05 -- memoize F(4)</a></li><li><a href="#section-14">Memo Block 06 -- memoize F(5)</a></li><li><a href="#section-15">Memo Block 07 -- the final vertical DAG</a></li><li><a href="#section-16">Bottom-up Block 01 -- array code</a></li><li><a href="#section-17">Bottom-up Block 02 -- update dp[2]</a></li><li><a href="#section-18">Bottom-up Block 03 -- update dp[3]</a></li><li><a href="#section-19">Bottom-up Block 04 -- update dp[4]</a></li><li><a href="#section-20">Bottom-up Block 05 -- update dp[5]</a></li><li><a href="#section-21">Bottom-up Block 06 -- update dp[6]</a></li></ol></details><section id="section-01"><h2>Problem overview and examples</h2><p><strong>Problem.</strong> Compute the <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math>th Fibonacci number, with <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>, <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>, and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02212;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> for <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02265;</mo><mn>2</mn></mrow></math>.</p>
+<p><strong>Example 1 (used below).</strong> Input: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>6</mn></mrow></math>. Output: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>8</mn></mrow></math>.</p>
+<p><strong>Example 2.</strong> Input: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>7</mn></mrow></math>. Output: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>13</mn></mrow></math>.</p>
+<p>The same recurrence is evaluated as a call tree, a memoized DAG, and a DP array.</p></section>
+<section id="section-02"><h2>Block 01 -- recursive code</h2><p>The state is one integer n. Each non-base call must evaluate both recursive values.</p>
+<pre><code class="language-python">def fib(n):
+    # Base case 1.
+    if n == 0:
+        return 0
+
+    # Base case 2.
+    if n == 1:
+        return 1
+
+    # Recursive choices.
+    val1 = fib(n - 1)
+    val2 = fib(n - 2)
+
+    return val1 + val2
+
+print(fib(6))  # 8</code></pre><div class="caption"><p>Both child values are required; this recurrence adds results rather than choosing between them.</p></div></section>
+<section id="section-03"><h2>Block 02 -- call fib(6)</h2><p>The root requests F(6). Faint vertices mark the remaining call occurrences.</p><figure><a href="assets/fibonacci-03.svg" aria-label="Open diagram: Fibonacci: Block 02 -- call fib(6)"><img src="assets/fibonacci-03.svg" alt="Fibonacci: Block 02 -- call fib(6)" width="421" height="146" loading="lazy"></a><figcaption>Original diagram, source page 1. <a href="assets/fibonacci-03.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-04"><h2>Block 03 -- reach the first completed subproblem</h2><p>Follow val1 down the left spine. Separate fib(1) and fib(0) base calls complete fib(2).</p><figure><a href="assets/fibonacci-04.svg" aria-label="Open diagram: Fibonacci: Block 03 -- reach the first completed subproblem"><img src="assets/fibonacci-04.svg" alt="Fibonacci: Block 03 -- reach the first completed subproblem" width="421" height="138" loading="lazy"></a><figcaption>Original diagram, source page 2. <a href="assets/fibonacci-04.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-05"><h2>Block 04 -- return fib(4)</h2><p>Continue depth first: fib(3) and then fib(4) receive both returned values.</p><figure><a href="assets/fibonacci-05.svg" aria-label="Open diagram: Fibonacci: Block 04 -- return fib(4)"><img src="assets/fibonacci-05.svg" alt="Fibonacci: Block 04 -- return fib(4)" width="421" height="138" loading="lazy"></a><figcaption>Original diagram, source page 2. <a href="assets/fibonacci-05.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-06"><h2>Block 05 -- finish fib(5)</h2><p>The left root subtree is complete. Repeated states are still repeated calls.</p><figure><a href="assets/fibonacci-06.svg" aria-label="Open diagram: Fibonacci: Block 05 -- finish fib(5)"><img src="assets/fibonacci-06.svg" alt="Fibonacci: Block 05 -- finish fib(5)" width="421" height="138" loading="lazy"></a><figcaption>Original diagram, source page 2. <a href="assets/fibonacci-06.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-07"><h2>Block 06 -- expand the root&#x27;s second call</h2><p>Enter the separate fib(4) occurrence and finish its fib(3) child.</p><figure><a href="assets/fibonacci-07.svg" aria-label="Open diagram: Fibonacci: Block 06 -- expand the root&#x27;s second call"><img src="assets/fibonacci-07.svg" alt="Fibonacci: Block 06 -- expand the root&#x27;s second call" width="421" height="138" loading="lazy"></a><figcaption>Original diagram, source page 3. <a href="assets/fibonacci-07.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-08"><h2>Block 07 -- complete naive fib(6)</h2><p>Every occurrence returns. The root combines 5 and 3 to return 8.</p><figure><a href="assets/fibonacci-08.svg" aria-label="Open diagram: Fibonacci: Block 07 -- complete naive fib(6)"><img src="assets/fibonacci-08.svg" alt="Fibonacci: Block 07 -- complete naive fib(6)" width="421" height="153" loading="lazy"></a><figcaption>Original diagram, source page 3. <a href="assets/fibonacci-08.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>Naive recursion makes 25 calls although only seven distinct states exist.</p></div></section>
+<section id="section-09"><h2>Memo Block 01 -- top-down memoized code</h2><p>memo[n] stores a completed state. A repeated call returns without rebuilding its subtree.</p>
+<pre><code class="language-python">N = 6
+memo = [None] * (N + 1)
+
+def fib(n):
+    # Base case 1.
+    if n == 0:
+        memo[0] = 0
+        return 0
+
+    # Base case 2.
+    if n == 1:
+        memo[1] = 1
+        return 1
+
+    # Reuse a completed subproblem.
+    if memo[n] is not None:
+        return memo[n]
+
+    val1 = fib(n - 1)
+    val2 = fib(n - 2)
+    memo[n] = val1 + val2
+    return memo[n]
+
+print(fib(N))  # 8</code></pre><div class="caption"><p>Each distinct non-base state is expanded once: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo stretchy="false">&#x00029;</mo></mrow></math> time and <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo stretchy="false">&#x00029;</mo></mrow></math> cache space.</p></div></section>
+<section id="section-10"><h2>Memo Block 02 -- merge the two base states</h2><p>Keep one canonical F(0) and one canonical F(1) on the left. Every call that needs either base state points to that single node.</p><figure><a href="assets/fibonacci-10.svg" aria-label="Open diagram: Fibonacci: Memo Block 02 -- merge the two base states"><img src="assets/fibonacci-10.svg" alt="Fibonacci: Memo Block 02 -- merge the two base states" width="407" height="172" loading="lazy"></a><figcaption>Original diagram, source page 4. <a href="assets/fibonacci-10.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>The array records values; graph arrows still point to canonical states.</p></div></section>
+<section id="section-11"><h2>Memo Block 03 -- memoize F(2)</h2><p>F(2) now owns the canonical F(1) and F(0) dependencies. Every repeated F(2) subtree redirects here.</p><figure><a href="assets/fibonacci-11.svg" aria-label="Open diagram: Fibonacci: Memo Block 03 -- memoize F(2)"><img src="assets/fibonacci-11.svg" alt="Fibonacci: Memo Block 03 -- memoize F(2)" width="388" height="172" loading="lazy"></a><figcaption>Original diagram, source page 4. <a href="assets/fibonacci-11.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-12"><h2>Memo Block 04 -- memoize F(3)</h2><p>F(3) joins the left spine. Calls that previously expanded F(3) now reuse its completed value 2.</p><figure><a href="assets/fibonacci-12.svg" aria-label="Open diagram: Fibonacci: Memo Block 04 -- memoize F(3)"><img src="assets/fibonacci-12.svg" alt="Fibonacci: Memo Block 04 -- memoize F(3)" width="388" height="172" loading="lazy"></a><figcaption>Original diagram, source page 5. <a href="assets/fibonacci-12.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-13"><h2>Memo Block 05 -- memoize F(4)</h2><p>F(4) becomes one state with value 3; all equal calls collapse into this single dependency node.</p><figure><a href="assets/fibonacci-13.svg" aria-label="Open diagram: Fibonacci: Memo Block 05 -- memoize F(4)"><img src="assets/fibonacci-13.svg" alt="Fibonacci: Memo Block 05 -- memoize F(4)" width="338" height="172" loading="lazy"></a><figcaption>Original diagram, source page 5. <a href="assets/fibonacci-13.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-14"><h2>Memo Block 06 -- memoize F(5)</h2><p>The root now depends on the stored values F(5)=5 and F(4)=3.</p><figure><a href="assets/fibonacci-14.svg" aria-label="Open diagram: Fibonacci: Memo Block 06 -- memoize F(5)"><img src="assets/fibonacci-14.svg" alt="Fibonacci: Memo Block 06 -- memoize F(5)" width="338" height="172" loading="lazy"></a><figcaption>Original diagram, source page 5. <a href="assets/fibonacci-14.svg">Open full-size diagram</a>.</figcaption></figure></section>
+<section id="section-15"><h2>Memo Block 07 -- the final vertical DAG</h2><p>Memoizing F(6) removes the final occurrence node. Straight arrows use n-1; curved arrows use n-2.</p><figure><a href="assets/fibonacci-15.svg" aria-label="Open diagram: Fibonacci: Memo Block 07 -- the final vertical DAG"><img src="assets/fibonacci-15.svg" alt="Fibonacci: Memo Block 07 -- the final vertical DAG" width="289" height="185" loading="lazy"></a><figcaption>Original diagram, source page 6. <a href="assets/fibonacci-15.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>The 25-call tree is now a seven-state acyclic dependency graph.</p></div></section>
+<section id="section-16"><h2>Bottom-up Block 01 -- array code</h2><p>The same recurrence is evaluated in dependency order, beginning with both base cells.</p>
+<pre><code class="language-python">N = 6
+dp = [0] * (N + 1)
+
+# Base cases.
+dp[0] = 0
+dp[1] = 1
+
+# Fill the array from left to right.
+for n in range(2, N + 1):
+    val1 = dp[n - 1]
+    val2 = dp[n - 2]
+    dp[n] = val1 + val2
+
+print(dp[N])  # 8
+
+# Space note: only dp[n-1] and dp[n-2] are needed.
+# The two-variable version is not shown here.</code></pre><div class="caption"><p>Five following blocks show all updates: dp[2], dp[3], dp[4], dp[5], and dp[6].</p></div></section>
+<section id="section-17"><h2>Bottom-up Block 02 -- update dp[2]</h2><p>Finalize dp[2] from the two cells immediately required by the recurrence.</p><figure><a href="assets/fibonacci-17.svg" aria-label="Open diagram: Fibonacci: Bottom-up Block 02 -- update dp[2]"><img src="assets/fibonacci-17.svg" alt="Fibonacci: Bottom-up Block 02 -- update dp[2]" width="314" height="118" loading="lazy"></a><figcaption>Original diagram, source page 7. <a href="assets/fibonacci-17.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>Earlier dependency edges remain faint; the two edges used now are bold.</p></div></section>
+<section id="section-18"><h2>Bottom-up Block 03 -- update dp[3]</h2><p>Finalize dp[3] from the two cells immediately required by the recurrence.</p><figure><a href="assets/fibonacci-18.svg" aria-label="Open diagram: Fibonacci: Bottom-up Block 03 -- update dp[3]"><img src="assets/fibonacci-18.svg" alt="Fibonacci: Bottom-up Block 03 -- update dp[3]" width="314" height="118" loading="lazy"></a><figcaption>Original diagram, source page 7. <a href="assets/fibonacci-18.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>Earlier dependency edges remain faint; the two edges used now are bold.</p></div></section>
+<section id="section-19"><h2>Bottom-up Block 04 -- update dp[4]</h2><p>Finalize dp[4] from the two cells immediately required by the recurrence.</p><figure><a href="assets/fibonacci-19.svg" aria-label="Open diagram: Fibonacci: Bottom-up Block 04 -- update dp[4]"><img src="assets/fibonacci-19.svg" alt="Fibonacci: Bottom-up Block 04 -- update dp[4]" width="314" height="118" loading="lazy"></a><figcaption>Original diagram, source page 8. <a href="assets/fibonacci-19.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>Earlier dependency edges remain faint; the two edges used now are bold.</p></div></section>
+<section id="section-20"><h2>Bottom-up Block 05 -- update dp[5]</h2><p>Finalize dp[5] from the two cells immediately required by the recurrence.</p><figure><a href="assets/fibonacci-20.svg" aria-label="Open diagram: Fibonacci: Bottom-up Block 05 -- update dp[5]"><img src="assets/fibonacci-20.svg" alt="Fibonacci: Bottom-up Block 05 -- update dp[5]" width="314" height="118" loading="lazy"></a><figcaption>Original diagram, source page 8. <a href="assets/fibonacci-20.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>Earlier dependency edges remain faint; the two edges used now are bold.</p></div></section>
+<section id="section-21"><h2>Bottom-up Block 06 -- update dp[6]</h2><p>Finalize dp[6] from the two cells immediately required by the recurrence.</p><figure><a href="assets/fibonacci-21.svg" aria-label="Open diagram: Fibonacci: Bottom-up Block 06 -- update dp[6]"><img src="assets/fibonacci-21.svg" alt="Fibonacci: Bottom-up Block 06 -- update dp[6]" width="314" height="118" loading="lazy"></a><figcaption>Original diagram, source page 8. <a href="assets/fibonacci-21.svg">Open full-size diagram</a>.</figcaption></figure><div class="caption"><p>The full array uses O(N) space; retaining only the previous two values reduces auxiliary space to O(1).</p></div></section></main>
+<footer><nav class="book-nav" aria-label="Handbook navigation"><a rel="prev" href="index.html">← Previous</a> · <a href="index.html">Contents</a> · <a href="../index.html">Home</a> · <a rel="next" href="knapsack.html">Next →</a></nav><p>© 2026 Dr. Sourabh Bose</p></footer>
+</body>
+</html>
