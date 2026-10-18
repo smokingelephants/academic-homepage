@@ -3,6 +3,7 @@
 Minimal static academic homepage on GitHub Pages. No build tools or external dependencies.
 
 - `index.html`: short bio and My blog, with the DP visualization handbook first.
+- `dynamic-programming-handbook.html`: handbook summary and Read online / Download PDF options.
 - `research.html`: complete resume publication list, research projects, education, academic appointments, service, and recognition.
 - `teaching.html`: courses taught and corresponding WSU course lookup links.
 - `style.css`: shared minimal styles.
@@ -18,11 +19,13 @@ Course names and lookup destinations were checked against the WSU catalog. CS 69
 
 Replace PDFs in place to preserve their public links. Only public homepage content and the two explicitly requested PDFs are included.
 
-The main page is the navigation hub. Every HTML subpage links back home; handbook entry points and the single resume link appear only on the main page; handbook pages have their own reading navigation.
+The main page is the navigation hub. Every HTML subpage links back home. The main page has one handbook title link leading to its entry page, and one resume link. Handbook chapters have their own reading navigation.
 
 ## Handbook: PDF and HTML
 
-The main page offers **Read online** and **Download PDF**. The online edition has
+The main page links to the handbook entry page, which offers a summary,
+**Read online**, and **Download PDF**. The download link uses the HTML download
+attribute and a filename; the reading link opens the HTML contents. The online edition has
 seven chapter pages, contents, section anchors, and Previous / Contents / Next /
 Home navigation. Equations use native MathML; diagrams use local vector SVGs.
 It needs no JavaScript, CDN, or website build service.
