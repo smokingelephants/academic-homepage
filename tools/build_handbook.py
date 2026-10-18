@@ -290,14 +290,28 @@ def refresh(materials: Path) -> dict:
 
 
 def navigation(chapters: list, index: int | None) -> str:
-    links = []
-    if index is not None:
-        links.append('<a rel="prev" href="' + (chapters[index-1]["slug"] + ".html" if index else "index.html") + '">← Previous</a>')
-    links.extend(['<a href="index.html">Contents</a>', '<a href="../index.html">Home</a>'])
+    def chapter_link(number):
+        chapter = chapters[number]
+        return chapter["slug"] + ".html", f'{chapter["number"]}. {chapter["title"]}'
+
+    next_page = previous_page = None
     if index is None or index + 1 < len(chapters):
-        next_slug = chapters[0 if index is None else index + 1]["slug"]
-        links.append(f'<a rel="next" href="{next_slug}.html">Next →</a>')
-    return '<nav class="book-nav" aria-label="Handbook navigation">' + " · ".join(links) + "</nav>"
+        next_page = chapter_link(0 if index is None else index + 1)
+    if index is not None:
+        previous_page = chapter_link(index - 1) if index else ("index.html", "Contents")
+    up_page = ("../dynamic-programming-handbook.html" if index is None else "index.html", "Dynamic Programming Visualization Handbook")
+    destinations = [("Next", "next", 37, next_page), ("Up", "up", 26, up_page), ("Previous", "prev", 63, previous_page), ("Contents", "contents", 65, ("index.html", "Contents"))]
+    buttons, labels = [], []
+    for label, icon, width, destination in destinations:
+        image = f'<img src="navigation/{icon}.png" width="{width}" height="24" alt="{label}">'
+        if destination is None:
+            buttons.append(f'<span class="unavailable" aria-disabled="true" title="No {label.lower()} page">{image}</span>')
+            continue
+        href, name = destination
+        rel = ' rel="' + ("prev" if label == "Previous" else label.lower()) + '"' if label != "Contents" else ''
+        buttons.append(f'<a href="{href}"{rel} aria-label="{label}: {html.escape(name, quote=True)}">{image}</a>')
+        labels.append(f'<strong>{label}:</strong> <a href="{href}"{rel}>{html.escape(name)}</a>' if label != "Contents" else '<strong><a href="index.html">Contents</a></strong>')
+    return '<nav class="book-nav" aria-label="Handbook navigation"><div class="book-buttons">' + " ".join(buttons) + '</div><div class="book-destinations">' + "\n".join(labels) + '</div></nav>'
 
 
 def page(title: str, content: str, nav: str) -> str:
@@ -313,7 +327,7 @@ def page(title: str, content: str, nav: str) -> str:
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<header><p class="book-title">Dynamic Programming Visualization Handbook</p>{nav}</header>
+<header>{nav}</header>
 <main id="main">{content}</main>
 <footer>{nav}<p>© 2026 Dr. Sourabh Bose</p></footer>
 </body>

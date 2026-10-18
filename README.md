@@ -19,15 +19,20 @@ Course names and lookup destinations were checked against the WSU catalog. CS 69
 
 Replace PDFs in place to preserve their public links. Only public homepage content and the two explicitly requested PDFs are included.
 
-The main page is the navigation hub. Every HTML subpage links back home. The main page has one handbook title link leading to its entry page, and one resume link. Handbook chapters have their own reading navigation.
+The main page is the navigation hub. The main page has one handbook title link leading to its entry page, and one resume link. Research, teaching, and the handbook entry page link back home. The HTML reader uses Next / Up / Previous / Contents navigation without a Home link.
 
 ## Handbook: PDF and HTML
 
 The main page links to the handbook entry page, which offers a summary,
 **Read online**, and **Download PDF**. The download link uses the HTML download
 attribute and a filename; the reading link opens the HTML contents. The online edition has
-seven chapter pages, contents, section anchors, and Previous / Contents / Next /
-Home navigation. Equations use native MathML; diagrams use local vector SVGs.
+seven chapter pages, contents, section anchors, and Next / Up / Previous /
+Contents buttons plus links naming the destinations at the top and bottom.
+Up leads to the reader contents from chapters, or to the handbook entry page from
+the contents. Unavailable Next/Previous buttons are disabled at the boundaries.
+The standard LaTeX2HTML navigation PNGs in `handbook/navigation/` come from the
+[reference book's navigation panel](http://www.incompleteideas.net/book/first/ebook/node29.html).
+Equations use native MathML; diagrams use local vector SVGs.
 It needs no JavaScript, CDN, or website build service.
 
 ### Rebuild HTML from the source snapshot
