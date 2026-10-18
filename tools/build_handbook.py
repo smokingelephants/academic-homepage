@@ -329,7 +329,7 @@ def page(title: str, content: str, nav: str) -> str:
 <a class="skip-link" href="#main">Skip to content</a>
 <header>{nav}</header>
 <main id="main">{content}</main>
-<footer>{nav}<p>© 2026 Dr. Sourabh Bose</p></footer>
+<footer>{nav}<p>© 2026 Sourabh Bose</p></footer>
 </body>
 </html>
 '''
