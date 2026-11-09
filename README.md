@@ -63,3 +63,10 @@ PDFs and the downloadable handbook are not modified by the HTML build.
 When updating both editions, also replace the public PDF at its existing path:
 `publications/dynamic_programming_visualization_handbook.pdf`. Commit generated
 HTML, SVGs, the source snapshot, and the updated PDF together, then push `main`.
+
+## Hilbert Meadow
+
+The homepage links to the browser game at
+https://smokingelephants.github.io/games/hilbert-meadow/.
+Its static WebAssembly bundle is deployed separately in the
+smokingelephants.github.io repository.
